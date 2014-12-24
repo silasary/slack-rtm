@@ -1,6 +1,7 @@
 ﻿using System;
 using NUnit.Framework;
 using SlackRTM;
+using System.Threading;
 
 namespace UnitTests
 {
@@ -12,22 +13,34 @@ namespace UnitTests
         public void TestStartInvalid()
         {
             var slack = new Slack();
-            Assert.IsFalse(slack.Start("invalid"));
+            Assert.IsFalse(slack.Init("invalid"));
         }
 
         [Test]
         public void TestStartValid()
         {
             var slack = new Slack();
-            Assert.IsTrue(slack.Start(Token));
+            Assert.IsTrue(slack.Init(Token));
         }
 
         [Test]
         public void TestConnect()
         {
             var slack = new Slack();
-            Assert.IsTrue(slack.Start(Token),"Invalid Token");
+            Assert.IsTrue(slack.Init(Token),"Invalid Token");
             Assert.IsTrue(slack.Connect(), "Failed to Connect");
+
+        }
+
+        [Test]
+        public void TestSend()
+        {
+            var slack = new Slack();
+            Assert.IsTrue(slack.Init(Token), "Invalid Token");
+            Assert.IsTrue(slack.Connect(), "Failed to Connect");
+            while (!slack.RecievedHello)
+                Thread.Sleep(0);
+            //slack.Send(new Events.Message(
         }
     }
 }

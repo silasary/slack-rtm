@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SlackRTM.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace SlackRTM
     /// </summary>
     public class Slack
     {
-        private TeamInfo teamInfo = null;
+        public TeamInfo TeamInfo { get; private set; }
 
         private WebClient wc = new WebClient();
 
@@ -27,7 +28,7 @@ namespace SlackRTM
 
         private string Url { get; set; }
 
-        public bool Start(string token)
+        public bool Init(string token)
         {
             JObject response = JObject.Parse(wc.DownloadString(
                 new UriBuilder("https://slack.com/api/rtm.start") { Query = "token=" + token }.Uri));
@@ -36,7 +37,7 @@ namespace SlackRTM
                 Console.WriteLine(response["error"]);
                 return false;
             }
-            teamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString());
+            TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString());
             Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString());
             Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString());
             Self = Users.First(n => n.Id == response["self"]["id"].ToString());
@@ -48,17 +49,29 @@ namespace SlackRTM
         public bool Connect()
         {
             if (String.IsNullOrEmpty(Url))
-                throw new InvalidOperationException("Call Slack.Start() first.");
+                throw new InvalidOperationException("Call Slack.Init() first.");
             webSocket = new WebSocket(Url);
             webSocket.OnMessage += webSocket_OnMessage;
             webSocket.Connect();
+            
             return true;
         }
 
         void webSocket_OnMessage(object sender, MessageEventArgs e)
         {
-            
+            var data = Event.NewEvent(e.Data);
+            if (data.Type == "hello")
+                this.RecievedHello = true;
+            if (this.OnEvent != null)
+                this.OnEvent(this, new SlackEventArgs(data));
         }
 
+        public delegate void OnEventEvent(object sender, SlackEventArgs e);
+        public event OnEventEvent OnEvent;
+
+
+        public bool RecievedHello { get; set; }
+
+        public bool Connected { get { return webSocket.IsAlive; } }
     }
 }

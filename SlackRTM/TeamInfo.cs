@@ -6,7 +6,7 @@ using System.Text;
 
 namespace SlackRTM
 {
-    class TeamInfo
+  public  class TeamInfo
     {
         [JsonProperty("id")]
         public string Id { get; set; }
