@@ -20,5 +20,10 @@ namespace SlackRTM.Events
         {
             get { return data["type"].ToString(); }
         }
+
+        public override string ToString()
+        {
+            return data.ToString();
+        }
     }
 }

@@ -2,12 +2,19 @@
 using NUnit.Framework;
 using SlackRTM;
 using System.Threading;
+using System.IO;
 
 namespace UnitTests
 {
     public partial class UnitTests
     {
-        // NOTE: You must create a partial class defining `const string Token = "xoxp-etc"`.
+        public static string Token = null;
+        public UnitTests()
+        {
+            Token = Environment.GetEnvironmentVariable("SLACK_TOKEN");
+            if (String.IsNullOrWhiteSpace(Token))
+                Token = File.ReadAllText("token.txt");
+        }
 
         [Test]
         public void TestStartInvalid()
@@ -32,7 +39,7 @@ namespace UnitTests
 
         }
 
-        [Test]
+        //[Test]
         public void TestSend()
         {
             var slack = new Slack();
