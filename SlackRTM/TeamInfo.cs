@@ -8,13 +8,13 @@ namespace SlackRTM
 {
   public  class TeamInfo
     {
-        [JsonProperty("id")]
+        //[JsonProperty("id")]
         public string Id { get; set; }
 
-        [JsonProperty("name")]
+        //[JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("domain")]
+        //[JsonProperty("domain")]
         public string Domain { get; set; }
 
         //There are more, but I don't need them right now.

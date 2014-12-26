@@ -5,9 +5,12 @@ using System.Text;
 
 namespace SlackRTM.Events
 {
-    class Message : Event
+    public class Message : Event
     {
-        public Message(Newtonsoft.Json.Linq.JObject data)
+        internal Message()
+        {
+        }
+        internal Message(Newtonsoft.Json.Linq.JObject data)
         {
             this.Channel = data.Value<string>("channel");
             this.User = data.Value<string>("user");
@@ -15,7 +18,15 @@ namespace SlackRTM.Events
             this.TimeStamp = data.Value<string>("ts");
             this.SubType = data.Value<string>("subtype");
             this.Hidden = data.Value<string>("hidden");
+            this.Id = -1;
+        }
 
+        internal Message(string channel, string text, int id)
+        {
+            // TODO: Complete member initialization
+            this.Channel = channel;
+            this.Text = text;
+            this.Id = id;
         }
 
         public string Channel { get; private set; }
@@ -36,5 +47,7 @@ namespace SlackRTM.Events
         {
             return string.Format("<#{0}> <@{1}>: {2}", Channel, User, Text);
         }
+
+        public int Id { get; set; }
     }
 }

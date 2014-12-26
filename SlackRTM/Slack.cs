@@ -37,9 +37,9 @@ namespace SlackRTM
                 Console.WriteLine(response["error"]);
                 return false;
             }
-            TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString());
-            Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString());
-            Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString());
+            TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString(), new SlackJsonConverter());
+            Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString(), new SlackJsonConverter());
+            Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString(), new SlackJsonConverter());
             Self = Users.First(n => n.Id == response["self"]["id"].ToString());
             Url = response["url"].ToString();
             //TODO: Groups, Bots and IMs.
@@ -73,5 +73,28 @@ namespace SlackRTM
         public bool RecievedHello { get; set; }
 
         public bool Connected { get { return webSocket.IsAlive; } }
+
+        public Channel GetChannel(string p)
+        {
+            if (p[0] == '#')
+                p = p.Substring(1);
+            return Channels.FirstOrDefault(c => c.Id == p || c.Name == p);
+        }
+
+        int sendId = 0;
+
+        public void SendMessage(string channel, string text)
+        {
+            if (channel[0] == '#') // They were lazy.
+                channel = GetChannel(channel).Id;
+            var message = new Message(channel, text, sendId++);
+            SentMessages.Add(message);
+            webSocket.Send(message.ToJson());
+                                        
+        }
+
+        List<Event> SentMessages = new List<Event>();
+
+        public bool Connecting { get { return !RecievedHello && webSocket != null; } }
     }
 }

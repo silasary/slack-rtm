@@ -1,4 +1,5 @@
 ﻿using SlackRTM;
+using SlackRTM.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,6 +16,7 @@ namespace SlackConsole
     {
         static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
             var Instance = new Slack();
             string token="";
             bool success ;
@@ -35,8 +37,15 @@ namespace SlackConsole
                     File.WriteAllText("token.txt", "");
             } while (!success);
             Instance.Connect();
-            while (Instance.Connected)
+            while (Instance.Connecting || Instance.Connected)
                 Thread.Sleep(0);
+            Console.WriteLine("===Disconnected===");
+            Console.ReadKey();
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            File.WriteAllText("crash.txt", e.ExceptionObject.ToString());
         }
 
         static void Instance_OnEvent(object sender, SlackEventArgs e)
@@ -45,11 +54,17 @@ namespace SlackConsole
             if (e.Data.Type == "hello")
             {
                 Console.WriteLine("Connected to '{0}' as '{1}'", instance.TeamInfo.Name, instance.Self.Name);
+                instance.SendMessage("#botspam", "Whoo! Spam from a bot!");
             }
             else
             {
                 Console.WriteLine(e.Data.Type);
                 Console.WriteLine(">{0}", e.Data);
+            }
+            if (e.Data.Type == "message")
+            {
+                var message = e.Data as Message;
+
             }
         }
     }

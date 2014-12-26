@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,18 +12,30 @@ namespace SlackRTM.Events
     {
         public static Event NewEvent(string Json)
         {
-            var data = JObject.Parse(Json);
-            switch (data["type"].ToString())
-            {
-                case "hello":
-                    return new Hello();
-                case "message":
-                    return new Message(data);
-                default:
-                    return new UnknownEvent(data);
-            }
+            return JsonConvert.DeserializeObject<Event>(Json, new SlackJsonConverter());
+            //var data = JObject.Parse(Json);
+            //if (data["type"] == null)
+            //{
+            //    return null;
+
+            //}
+            //else
+            //switch (data["type"].ToString())
+            //{
+            //    case "hello":
+            //        return new Hello();
+            //    case "message":
+            //        return new Message(data);
+            //    default:
+            //        return new UnknownEvent(data);
+            //}
         }
 
         public abstract string Type { get; }
+
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, new SlackJsonConverter());
+        }
     }
 }

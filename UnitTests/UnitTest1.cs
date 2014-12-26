@@ -39,7 +39,7 @@ namespace UnitTests
 
         }
 
-        //[Test]
+        [Test]
         public void TestSend()
         {
             var slack = new Slack();
@@ -47,7 +47,8 @@ namespace UnitTests
             Assert.IsTrue(slack.Connect(), "Failed to Connect");
             while (!slack.RecievedHello)
                 Thread.Sleep(0);
-            //slack.Send(new Events.Message(
+            slack.SendMessage(slack.GetChannel("#botspam").Id, "Test!");
+            slack.SendMessage("#botspam", "Test2");
         }
     }
 }
