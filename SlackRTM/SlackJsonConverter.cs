@@ -25,7 +25,7 @@ namespace SlackRTM
                 existingValue= GenerateEvent(ref reader);
             if (existingValue == null)
                 existingValue = Activator.CreateInstance(objectType, true);
-            serializer.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            serializer.ContractResolver = new TrueCamelCasePropertyNamesContractResolver();
             serializer.Populate(reader, existingValue);
             return existingValue;
         }
@@ -59,11 +59,21 @@ namespace SlackRTM
                     object propValue = prop.GetValue(value, null);
                     if (propValue != null)
                     {
-                        jo.Add(prop.Name.ToLower(), JToken.FromObject(propValue, serializer));
+                        jo.Add(prop.Name.ToUnderscoreLower(), JToken.FromObject(propValue, serializer));
                     }
                 }
             }
             jo.WriteTo(writer);
         }
+
+        public class TrueCamelCasePropertyNamesContractResolver : DefaultContractResolver
+        {
+            protected override string ResolvePropertyName(string propertyName)
+            {
+                return propertyName.FromUnderscoreLower();
+            }
+
+        }
+
     }
 }
