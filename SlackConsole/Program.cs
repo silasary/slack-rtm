@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace SlackConsole
@@ -56,16 +57,39 @@ namespace SlackConsole
                 Console.WriteLine("Connected to '{0}' as '{1}'", instance.TeamInfo.Name, instance.Self.Name);
                 instance.SendMessage("#botspam", "Whoo! Spam from a bot!");
             }
+            else if (e.Data.Type == "message")
+            {
+                var message = e.Data as Message;
+                Console.WriteLine(SubstituteMarkup(message.ToString(), instance));
+            }
             else
             {
                 Console.WriteLine(e.Data.Type);
                 Console.WriteLine(">{0}", e.Data);
             }
-            if (e.Data.Type == "message")
-            {
-                var message = e.Data as Message;
 
-            }
+        }
+
+        private static string SubstituteMarkup(string p, Slack instance)
+        {
+            return Regex.Replace(p, @"<([@#])(.*?)>", (match) =>
+            {
+                switch (match.Groups[1].Value)
+                {
+                    case "#":
+                        var chan = instance.GetChannel(match.Groups[2].Value);
+                        if (chan == null)
+                            break;
+                        return "#" + chan.Name;
+                    case "@":
+                        var user = instance.GetUser(match.Groups[2].Value);
+                        if (user == null)
+                            break;
+                        return "@" + user.Name;
+
+                }
+                return match.Groups[0].Value;
+            });
         }
     }
 }

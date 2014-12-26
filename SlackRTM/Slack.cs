@@ -89,6 +89,8 @@ namespace SlackRTM
 
         public Channel GetChannel(string p)
         {
+            if (string.IsNullOrEmpty(p) || p == "#")
+                return null; 
             if (p[0] == '#')
                 p = p.Substring(1);
             return Channels.FirstOrDefault(c => c.Id == p || c.Name == p);
@@ -109,5 +111,14 @@ namespace SlackRTM
         List<Event> SentMessages = new List<Event>();
 
         public bool Connecting { get { return !RecievedHello && webSocket != null; } }
+
+        public User GetUser(string p)
+        {
+            if (string.IsNullOrEmpty(p) || p == "@")
+                return null;
+            if (p[0] == '@')
+                p = p.Substring(1);
+            return Users.FirstOrDefault(c => c.Id == p || c.Name == p);
+        }
     }
 }
