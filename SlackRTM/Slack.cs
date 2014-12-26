@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SlackRTM.Events;
+using SlackRTM.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,16 @@ namespace SlackRTM
         public List<User> Users { get; set; }
 
         private string Url { get; set; }
+        public Slack()
+        {
+            OnAck += Slack_OnAck;
+        }
 
+        void Slack_OnAck(object sender, SlackEventArgs e)
+        {
+            var ack = (e.Data as Ack);
+            
+        }
         public bool Init(string token)
         {
             JObject response = JObject.Parse(wc.DownloadString(
@@ -62,12 +72,15 @@ namespace SlackRTM
             var data = Event.NewEvent(e.Data);
             if (data.Type == "hello")
                 this.RecievedHello = true;
-            if (this.OnEvent != null)
+            if (data is Ack)
+                this.OnAck(this, new SlackEventArgs(data));
+            else if (this.OnEvent != null)
                 this.OnEvent(this, new SlackEventArgs(data));
         }
 
         public delegate void OnEventEvent(object sender, SlackEventArgs e);
         public event OnEventEvent OnEvent;
+        public event OnEventEvent OnAck;
 
 
         public bool RecievedHello { get; set; }
@@ -85,12 +98,12 @@ namespace SlackRTM
 
         public void SendMessage(string channel, string text)
         {
-            if (channel[0] == '#') // They were lazy.
-                channel = GetChannel(channel).Id;
-            var message = new Message(channel, text, sendId++);
+            var chan = GetChannel(channel);
+            //if (!chan.IsMember)
+            //    throw new NotInChannelException();
+            var message = new Message(chan.Id, text, sendId++);
             SentMessages.Add(message);
-            webSocket.Send(message.ToJson());
-                                        
+            webSocket.Send(message.ToJson());                            
         }
 
         List<Event> SentMessages = new List<Event>();

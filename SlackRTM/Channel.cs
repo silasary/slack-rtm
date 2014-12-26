@@ -23,6 +23,8 @@ namespace SlackRTM
         [JsonProperty("is_member")]
         public bool IsMember { get; set; }
 
+        public bool IsGeneral { get; set; }
+
 
     }
 }

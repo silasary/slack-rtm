@@ -52,6 +52,7 @@
     <Compile Include="Events\Message.cs" />
     <Compile Include="Events\UnknownEvent.cs" />
     <Compile Include="Ext.cs" />
+    <Compile Include="Exceptions\NotInChannelException.cs" />
     <Compile Include="Slack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SlackEventArgs.cs" />
