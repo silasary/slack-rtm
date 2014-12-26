@@ -40,6 +40,7 @@ namespace UnitTests
         }
 
         [Test]
+        [Ignore("Spammy")]
         public void TestSend()
         {
             var slack = new Slack();
