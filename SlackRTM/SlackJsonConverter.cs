@@ -32,19 +32,33 @@ namespace SlackRTM
 
         private static object GenerateEvent(ref JsonReader reader)
         {
+            Event generatedObject;
             JToken obj = JObject.ReadFrom(reader);
             reader = obj.CreateReader();
             if (obj["ok"] != null)
-                return new Ack();
+                generatedObject = new Ack();
+            else
             switch (obj["type"].ToString())
             {
                 case "hello":
-                    return new Hello();
+                    generatedObject = new Hello();
+                    break;
                 case "message":
-                    return new Message();
+                    generatedObject = new Message();
+                    break;
                 default:
                     return new UnknownEvent(obj as JObject);
             }
+            foreach (JProperty key in obj.Children())
+            {
+                var name = key.Name.FromUnderscoreLower();
+                var prop = generatedObject.GetType().GetProperties().FirstOrDefault(n => n.Name == name);
+                if (prop != null && prop.CanWrite && !string.IsNullOrEmpty(key.Value.ToString()))
+                {
+                    prop.SetValue(generatedObject, key.Value.ToObject(prop.PropertyType), null);
+                }
+            }
+            return generatedObject;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
