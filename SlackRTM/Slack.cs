@@ -60,6 +60,8 @@ namespace SlackRTM
         {
             if (String.IsNullOrEmpty(Url))
                 throw new InvalidOperationException("Call Slack.Init() first.");
+            if (webSocket != null)
+                webSocket.Close();
             webSocket = new WebSocket(Url);
             webSocket.OnMessage += webSocket_OnMessage;
             webSocket.Connect();
@@ -69,6 +71,8 @@ namespace SlackRTM
 
         void webSocket_OnMessage(object sender, MessageEventArgs e)
         {
+            if (sender != webSocket)
+                return;
             var data = Event.NewEvent(e.Data);
             if (data.Type == "hello")
                 this.RecievedHello = true;
