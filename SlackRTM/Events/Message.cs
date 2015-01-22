@@ -17,7 +17,7 @@ namespace SlackRTM.Events
             this.Text = data.Value<string>("text");
             this.TimeStamp = data.Value<string>("ts");
             this.SubType = data.Value<string>("subtype");
-            this.Hidden = data.Value<string>("hidden");
+            this.Hidden = data.Value<bool>("hidden");
             this.Id = -1;
         }
 
@@ -39,7 +39,7 @@ namespace SlackRTM.Events
 
         public string SubType { get; private set; }
 
-        public string Hidden { get; private set; }
+        public bool Hidden { get; private set; }
 
         public override string Type { get { return "message"; } }
 

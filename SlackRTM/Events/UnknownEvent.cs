@@ -6,11 +6,11 @@ using System.Text;
 
 namespace SlackRTM.Events
 {
-    class UnknownEvent : Event
+    public class UnknownEvent : Event
     {
         public Newtonsoft.Json.Linq.JObject data;
 
-        public UnknownEvent(JObject data)
+        internal UnknownEvent(JObject data)
         {
             // TODO: Complete member initialization
             this.data = data;
