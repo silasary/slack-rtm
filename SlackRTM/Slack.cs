@@ -21,7 +21,8 @@ namespace SlackRTM
 
         private WebSocket webSocket;
 
-        public List<Channel> Channels { get; set; }
+		public List<Channel> Channels { get; set; }
+		public List<Im> Ims { get; set; }
 
         public User Self { get; set; }
 
@@ -48,7 +49,10 @@ namespace SlackRTM
                 return false;
             }
             TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString(), new SlackJsonConverter());
-            Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString(), new SlackJsonConverter());
+			Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString( ), new SlackJsonConverter());
+			Channels.AddRange(JsonConvert.DeserializeObject<List<Channel>>(response["groups"].ToString( ), new SlackJsonConverter())); // Groups are glorified channels?
+			Ims = JsonConvert.DeserializeObject<List<Im>>(response["ims"].ToString( ), new SlackJsonConverter());  // They're also channels, but with 'User's instead of 'Name's.
+
             Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString(), new SlackJsonConverter());
             Self = Users.First(n => n.Id == response["self"]["id"].ToString());
             Url = response["url"].ToString();
@@ -93,8 +97,10 @@ namespace SlackRTM
 
         public Channel GetChannel(string p)
         {
-            if (string.IsNullOrEmpty(p) || p == "#")
+			if (string.IsNullOrEmpty(p) || p == "#" || p == "@")
                 return null; 
+			if (p[0] == '@')
+				return Ims.FirstOrDefault(c => c.Id == p || c.Name == p);
             if (p[0] == '#')
                 p = p.Substring(1);
             return Channels.FirstOrDefault(c => c.Id == p || c.Name == p);
@@ -103,22 +109,21 @@ namespace SlackRTM
         int sendId = 0;
 
         public void SendMessage(string channel, string text)
-        {
-            Message message;
-            if (channel[0] == 'D')
-            {
-                message = new Message(channel, text, sendId++);
-            }
-            else
-            {
-                var chan = GetChannel(channel);
-                //if (!chan.IsMember)
-                //    throw new NotInChannelException();
-                message = new Message(chan.Id, text, sendId++);
-            }
-            SentMessages.Add(message);
-            webSocket.Send(message.ToJson());                            
-        }
+		{
+			Message message;
+			var chan = GetChannel(channel);
+			if (chan == null)
+				message = new Message(channel, text, sendId++); // The user might know what they're doing more than we do, so attempt it with the ID they provided.  Initally a fix for broken IM support.
+			else
+			{
+                
+				//if (!chan.IsMember)
+				//    throw new NotInChannelException();
+				message = new Message(chan.Id, text, sendId++);
+			}
+			SentMessages.Add(message);
+			webSocket.Send(message.ToJson( ));
+		}
 
         List<Event> SentMessages = new List<Event>();
 
