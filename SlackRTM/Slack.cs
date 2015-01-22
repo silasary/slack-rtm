@@ -104,10 +104,18 @@ namespace SlackRTM
 
         public void SendMessage(string channel, string text)
         {
-            var chan = GetChannel(channel);
-            //if (!chan.IsMember)
-            //    throw new NotInChannelException();
-            var message = new Message(chan.Id, text, sendId++);
+            Message message;
+            if (channel[0] == 'D')
+            {
+                message = new Message(channel, text, sendId++);
+            }
+            else
+            {
+                var chan = GetChannel(channel);
+                //if (!chan.IsMember)
+                //    throw new NotInChannelException();
+                message = new Message(chan.Id, text, sendId++);
+            }
             SentMessages.Add(message);
             webSocket.Send(message.ToJson());                            
         }
