@@ -21,6 +21,8 @@ namespace SlackRTM
 
         private WebSocket webSocket;
 
+        private string token;
+
 		public List<Channel> Channels { get; set; }
 		public List<Im> Ims { get; set; }
 
@@ -33,14 +35,23 @@ namespace SlackRTM
         {
             OnAck += Slack_OnAck;
         }
+        public Slack(string token)
+        {
+            OnAck += Slack_OnAck;
+            this.token = token;
+        }
 
         void Slack_OnAck(object sender, SlackEventArgs e)
         {
             var ack = (e.Data as Ack);
-            
         }
+        [Obsolete("Pass the token into the constructor instead.")]
         public bool Init(string token)
         {
+            this.token = token;
+            return Init();
+        }
+        public bool Init(){
             JObject response = JObject.Parse(wc.DownloadString(
                 new UriBuilder("https://slack.com/api/rtm.start") { Query = "token=" + token }.Uri));
             if (response["ok"].Value<bool>() == false)
@@ -63,13 +74,18 @@ namespace SlackRTM
         public bool Connect()
         {
             if (String.IsNullOrEmpty(Url))
-                throw new InvalidOperationException("Call Slack.Init() first.");
+            {
+                if (!string.IsNullOrEmpty(this.token))
+                    Init();
+                else
+                    throw new InvalidOperationException("Call Slack.Init() first.");
+            }
             if (webSocket != null)
                 webSocket.Close();
             webSocket = new WebSocket(Url);
             webSocket.OnMessage += webSocket_OnMessage;
             webSocket.Connect();
-            
+            Url = null;
             return true;
         }
 
@@ -108,10 +124,11 @@ namespace SlackRTM
 
         int sendId = 0;
 
-        public void SendMessage(string channel, string text)
+        public void SendMessage(string channel, string text, params object[] args)
 		{
 			Message message;
 			var chan = GetChannel(channel);
+            text = String.Format(text, args);
 			if (chan == null)
 				message = new Message(channel, text, sendId++); // The user might know what they're doing more than we do, so attempt it with the ID they provided.  Initally a fix for broken IM support.
 			else
