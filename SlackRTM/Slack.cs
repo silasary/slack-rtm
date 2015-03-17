@@ -33,7 +33,7 @@ namespace SlackRTM
 
         private int sendId = 0;
         private List<Event> SentMessages = new List<Event>();
-        private string token;
+        internal string token;
         private string Url;
         private WebClient wc = new WebClient();
 
@@ -41,17 +41,21 @@ namespace SlackRTM
         public Slack()
         {
             OnAck += Slack_OnAck;
+            JsonConverter = new SlackJsonConverter(this);
         }
 
         public Slack(string token)
         {
             OnAck += Slack_OnAck;
             this.token = token;
+            JsonConverter = new SlackJsonConverter(this);
         }
 
         public event OnEventEvent OnAck;
 
         public event OnEventEvent OnEvent;
+        
+        private SlackJsonConverter JsonConverter;
 
         public delegate void OnEventEvent(object sender, SlackEventArgs e);
 
@@ -102,19 +106,18 @@ namespace SlackRTM
 
         public bool Init()
         {
-            JObject response = JObject.Parse(wc.DownloadString(
-                new UriBuilder("https://slack.com/api/rtm.start") { Query = "token=" + token }.Uri));
+            JObject response = Api("rtm.start");
             if (response["ok"].Value<bool>() == false)
             {
                 Console.WriteLine(response["error"]);
                 return false;
             }
-            TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString(), new SlackJsonConverter());
-            Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString(), new SlackJsonConverter());
-            Channels.AddRange(JsonConvert.DeserializeObject<List<Channel>>(response["groups"].ToString(), new SlackJsonConverter())); // Groups are glorified channels?
-            Ims = JsonConvert.DeserializeObject<List<Im>>(response["ims"].ToString(), new SlackJsonConverter());  // They're also channels, but with 'User's instead of 'Name's.
+            TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString(), JsonConverter);
+            Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString(), JsonConverter);
+            Channels.AddRange(JsonConvert.DeserializeObject<List<Channel>>(response["groups"].ToString(), JsonConverter)); // Groups are glorified channels?
+            Ims = JsonConvert.DeserializeObject<List<Im>>(response["ims"].ToString(), JsonConverter);  // They're also channels, but with 'User's instead of 'Name's.
 
-            Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString(), new SlackJsonConverter());
+            Users = JsonConvert.DeserializeObject<List<User>>(response["users"].ToString(), JsonConverter);
             Self = Users.First(n => n.Id == response["self"]["id"].ToString());
             Url = response["url"].ToString();
             PrimaryChannel = Channels.FirstOrDefault(n => n.IsGeneral);
@@ -154,6 +157,19 @@ namespace SlackRTM
                 this.OnAck(this, new SlackEventArgs(data));
             else if (this.OnEvent != null)
                 this.OnEvent(this, new SlackEventArgs(data));
+        }
+
+        internal JObject Api(string method, params JProperty[] args)
+        {
+            var uri = new UriBuilder("https://slack.com/api/" + method);
+            
+            var query = "token=" + token;
+            foreach (var arg in args)
+            {
+                query += string.Format("&{0}={1}", arg.Name, arg.Value);
+            }
+            uri.Query = query;
+            return JObject.Parse(wc.DownloadString(uri.Uri));
         }
     }
 }

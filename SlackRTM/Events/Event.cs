@@ -12,7 +12,7 @@ namespace SlackRTM.Events
     {
         public static Event NewEvent(string Json)
         {
-            return JsonConvert.DeserializeObject<Event>(Json, new SlackJsonConverter());
+            return JsonConvert.DeserializeObject<Event>(Json, new SlackJsonConverter(null));
             //var data = JObject.Parse(Json);
             //if (data["type"] == null)
             //{
@@ -35,7 +35,7 @@ namespace SlackRTM.Events
 
         public string ToJson()
         {
-            return JsonConvert.SerializeObject(this, new SlackJsonConverter());
+            return JsonConvert.SerializeObject(this, new SlackJsonConverter(null));
         }
     }
 }

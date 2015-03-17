@@ -17,6 +17,10 @@
         public string Name { get; set; }
 
 		public virtual ChannelType Type {  get { return ChannelType.Channel;} }
+
+        private Slack slack;
+
+
     }
 
 	public class Group : Channel

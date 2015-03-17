@@ -55,7 +55,7 @@ namespace SlackConsole
             if (e.Data.Type == "hello")
             {
                 Console.WriteLine("Connected to '{0}' as '{1}'", instance.TeamInfo.Name, instance.Self.Name);
-                instance.SendMessage("#botspam", "Whoo! Spam from a bot!");
+                //instance.SendMessage("#botspam", "Whoo! Spam from a bot!");
             }
             else if (e.Data.Type == "message")
             {

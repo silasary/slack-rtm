@@ -12,6 +12,13 @@ namespace SlackRTM
 {
     class SlackJsonConverter : JsonConverter
     {
+        private Slack slack;
+
+        public SlackJsonConverter(Slack slack)
+        {
+            // TODO: Complete member initialization
+            this.slack = slack;
+        }
         public override bool CanConvert(Type objectType)
         {
             if (objectType.Assembly == Assembly.GetExecutingAssembly())
@@ -27,6 +34,9 @@ namespace SlackRTM
                 existingValue = Activator.CreateInstance(objectType, true);
             serializer.ContractResolver = new TrueCamelCasePropertyNamesContractResolver();
             serializer.Populate(reader, existingValue);
+            if (existingValue.GetType().GetProperty("SlackInstance") != null)
+                existingValue.GetType().GetProperty("SlackInstance").SetValue(existingValue, slack, null);
+
             return existingValue;
         }
 

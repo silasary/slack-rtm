@@ -8,6 +8,8 @@ namespace SlackRTM
 {
   public  class TeamInfo
     {
+        public Slack SlackInstance { get; set; }
+
         //[JsonProperty("id")]
         public string Id { get; set; }
 
