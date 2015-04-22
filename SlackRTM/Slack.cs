@@ -16,6 +16,14 @@ namespace SlackRTM
     {
         public List<Channel> Channels { get; private set; }
 
+        public IEnumerable<Channel> JoinedChannels
+        {
+            get
+            {
+                return Channels.Where(n => n.IsMember);
+            }
+        }
+
         public bool Connected { get { return webSocket.IsAlive; } }
 
         public bool Connecting { get { return !RecievedHello && webSocket != null; } }
