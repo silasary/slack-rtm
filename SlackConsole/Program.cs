@@ -55,6 +55,11 @@ namespace SlackConsole
             if (e.Data.Type == "hello")
             {
                 Console.WriteLine("Connected to '{0}' as '{1}'", instance.TeamInfo.Name, instance.Self.Name);
+                foreach (var c in instance.Channels)
+                {
+                    if (c.IsMember)
+                        Console.WriteLine("Member of: {0}", c.Name);
+                }
                 //instance.SendMessage("#botspam", "Whoo! Spam from a bot!");
             }
             else if (e.Data.Type == "message")
