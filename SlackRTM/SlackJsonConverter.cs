@@ -94,9 +94,15 @@ namespace SlackRTM
         {
             protected override string ResolvePropertyName(string propertyName)
             {
-                return propertyName.FromUnderscoreLower();
+                if (char.IsUpper(propertyName[0]))
+                    return propertyName.ToUnderscoreLower();
+                else
+                    return propertyName.FromUnderscoreLower();
             }
-
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                return base.CreateProperty(member, memberSerialization);
+            }
         }
 
     }
