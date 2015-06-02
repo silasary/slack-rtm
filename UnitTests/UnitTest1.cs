@@ -19,22 +19,22 @@ namespace UnitTests
         [Test]
         public void TestStartInvalid()
         {
-            var slack = new Slack();
-            Assert.IsFalse(slack.Init("invalid"));
+            var slack = new Slack("invalid");
+            Assert.IsFalse(slack.Init());
         }
 
         [Test]
         public void TestStartValid()
         {
-            var slack = new Slack();
-            Assert.IsTrue(slack.Init(Token));
+            var slack = new Slack(Token);
+            Assert.IsTrue(slack.Init());
         }
 
         [Test]
         public void TestConnect()
         {
-            var slack = new Slack();
-            Assert.IsTrue(slack.Init(Token),"Invalid Token");
+            var slack = new Slack(Token);
+            Assert.IsTrue(slack.Init(),"Invalid Token");
             Assert.IsTrue(slack.Connect(), "Failed to Connect");
 
         }
@@ -43,8 +43,8 @@ namespace UnitTests
         [Ignore("Spammy")]
         public void TestSend()
         {
-            var slack = new Slack();
-            Assert.IsTrue(slack.Init(Token), "Invalid Token");
+            var slack = new Slack(Token);
+            Assert.IsTrue(slack.Init(), "Invalid Token");
             Assert.IsTrue(slack.Connect(), "Failed to Connect");
             while (!slack.RecievedHello)
                 Thread.Sleep(0);

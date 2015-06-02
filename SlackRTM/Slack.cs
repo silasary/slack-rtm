@@ -137,15 +137,22 @@ namespace SlackRTM
         {
             Message message;
             var chan = GetChannel(channel);
-            text = String.Format(text, args);
             if (chan == null)
-                message = new Message(channel, text, sendId++); // The user might know what they're doing more than we do, so attempt it with the ID they provided.  Initally a fix for broken IM support.
-            else
             {
-                //if (!chan.IsMember)
-                //    throw new NotInChannelException();
-                message = new Message(chan.Id, text, sendId++);
+                message = new Message(channel, text, sendId++); // The user might know what they're doing more than we do, so attempt it with the ID they provided.  Initally a fix for broken IM support.
+                SentMessages.Add(message);
+                webSocket.Send(message.ToJson());
             }
+            else
+                SendMessage(chan, text, args);
+        }
+
+        private void SendMessage(Channel chan, string text, object[] args)
+        {
+            text = String.Format(text, args);
+            //if (!chan.IsMember)
+            //    throw new NotInChannelException();
+            var message = new Message(chan.Id, text, sendId++);
             SentMessages.Add(message);
             webSocket.Send(message.ToJson());
         }
