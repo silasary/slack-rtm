@@ -20,7 +20,16 @@
 
         private Slack slack;
 
+        public virtual bool Join()
+        {
 
+            return false;
+        }
+
+        public virtual bool Leave()
+        {
+            return false;
+        }
     }
 
 	public class Group : Channel
