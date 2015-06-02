@@ -147,7 +147,7 @@ namespace SlackRTM
                 SendMessage(chan, text, args);
         }
 
-        public void SendMessage(Channel chan, string text, object[] args)
+        public void SendMessage(Channel chan, string text, params object[] args)
         {
             text = String.Format(text, args);
             //if (!chan.IsMember)
