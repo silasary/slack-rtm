@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Name="SlackConsole" Path="SlackRTM" Type="Console">
+<Project Name="SlackConsole" Path="SlackConsole" Type="Console">
   <References>
     <Reference Include="System" />
     <Reference Include="System.Core" />
