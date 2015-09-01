@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Name="SlackRTM" Path="SlackRTM" Type="Library">
+  <References>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Newtonsoft.Json" />
+    <Reference Include="websocket-sharp" />
+  </References>
+  <Files>
+    <Compile Include="Channel.cs" />
+    <Compile Include="Events\Ack.cs" />
+    <Compile Include="Events\Event.cs" />
+    <Compile Include="Events\Hello.cs" />
+    <Compile Include="Events\Message.cs" />
+    <Compile Include="Events\UnknownEvent.cs" />
+    <Compile Include="Ext.cs" />
+    <Compile Include="Exceptions\NotInChannelException.cs" />
+    <Compile Include="Slack.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlackEventArgs.cs" />
+    <Compile Include="SlackJsonConverter.cs" />
+    <Compile Include="TeamInfo.cs" />
+    <Compile Include="User.cs" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </Files>
+</Project>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModuleInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Path>/Users/9508449/SLACKRTM</Path>
+  <Name>slack-rtm</Name>
+  <DefaultAction>resync</DefaultAction>
+  <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
+  <DisableSynchronisation xsi:nil="true" />
+  <ModuleAssemblies />
+  <Packages>
+    <PackageRef>
+      <Uri>http://protobuild.org/hach-que/Newtonsoft.Json</Uri>
+      <GitRef>master</GitRef>
+      <Folder>Newtonsoft.Json</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-nuget://www.nuget.org/api/v2/|websocket-sharp</Uri>
+      <GitRef>1.0.0</GitRef>
+      <Folder>websocket-sharp</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-nuget://www.nuget.org/api/v2/|NUnitTestAdapter.WithFramework</Uri>
+      <GitRef>1.2</GitRef>
+      <Folder>NUnitTestAdapter.WithFramework</Folder>
+    </PackageRef>
+  </Packages>
+</ModuleInfo>
