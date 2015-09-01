@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ModuleInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Path>/Users/9508449/SLACKRTM</Path>
-  <Name>slack-rtm</Name>
+  <Name>SlackRTM</Name>
   <DefaultAction>resync</DefaultAction>
   <GenerateNuGetRepositories>true</GenerateNuGetRepositories>
   <DisableSynchronisation xsi:nil="true" />
@@ -21,6 +20,16 @@
       <Uri>https-nuget://www.nuget.org/api/v2/|NUnitTestAdapter.WithFramework</Uri>
       <GitRef>1.2</GitRef>
       <Folder>NUnitTestAdapter.WithFramework</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-nuget://www.nuget.org/api/v2/|NUnit.Runners</Uri>
+      <GitRef>2.6.4</GitRef>
+      <Folder>NUnit.Runners</Folder>
+    </PackageRef>
+    <PackageRef>
+      <Uri>https-nuget://www.nuget.org/api/v2/|NUnit</Uri>
+      <GitRef>2.6.4</GitRef>
+      <Folder>NUnit</Folder>
     </PackageRef>
   </Packages>
 </ModuleInfo>

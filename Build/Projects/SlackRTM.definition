@@ -18,10 +18,10 @@
     <Compile Include="Events\Hello.cs" />
     <Compile Include="Events\Message.cs" />
     <Compile Include="Events\UnknownEvent.cs" />
-    <Compile Include="Ext.cs" />
     <Compile Include="Exceptions\NotInChannelException.cs" />
-    <Compile Include="Slack.cs" />
+    <Compile Include="Ext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Slack.cs" />
     <Compile Include="SlackEventArgs.cs" />
     <Compile Include="SlackJsonConverter.cs" />
     <Compile Include="TeamInfo.cs" />
