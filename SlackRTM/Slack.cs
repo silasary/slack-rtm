@@ -117,8 +117,7 @@ namespace SlackRTM
             JObject response = Api("rtm.start");
             if (response["ok"].Value<bool>() == false)
             {
-                Console.WriteLine(response["error"]);
-                return false;
+                throw new Exception((string)response["error"]);
             }
             TeamInfo = JsonConvert.DeserializeObject<TeamInfo>(response["team"].ToString(), JsonConverter);
             Channels = JsonConvert.DeserializeObject<List<Channel>>(response["channels"].ToString(), JsonConverter);
