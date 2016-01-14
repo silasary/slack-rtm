@@ -16,7 +16,6 @@ namespace SlackRTM
 
         public SlackJsonConverter(Slack slack)
         {
-            // TODO: Complete member initialization
             this.slack = slack;
         }
         public override bool CanConvert(Type objectType)

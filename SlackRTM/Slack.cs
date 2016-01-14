@@ -129,13 +129,14 @@ namespace SlackRTM
             Self = Users.First(n => n.Id == response["self"]["id"].ToString());
             Url = response["url"].ToString();
             PrimaryChannel = Channels.FirstOrDefault(n => n.IsGeneral);
-            //TODO: Groups, Bots and IMs.
+            //TODO: Bots.
             return true;
         }
 
         public void SendMessage(string channel, string text, params object[] args)
         {
             Message message;
+            text = String.Format(text, args);
             var chan = GetChannel(channel);
             if (chan == null)
             {
@@ -174,7 +175,14 @@ namespace SlackRTM
                 this.OnEvent(this, new SlackEventArgs(data));
         }
 
-        internal JObject Api(string method, params JProperty[] args)
+        /// <summary>
+        /// Raw API call.  You hopefully don't need to call this.
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        /// <remarks>Calling APIs directly might result in a confused state.  You may need to call <see cref="Slack.Init"/> to resynchronize the state. </remarks>
+        public JObject Api(string method, params JProperty[] args)
         {
             var uri = new UriBuilder("https://slack.com/api/" + method);
             
