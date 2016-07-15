@@ -74,10 +74,12 @@ namespace SlackRTM
                 if (!string.IsNullOrEmpty(this.token))
                     Init();
                 else
-                    throw new InvalidOperationException("Call Slack.Init() first.");
+                    throw new InvalidOperationException("No OAuth Token was provided");
             }
-            if (webSocket != null)
+            if (webSocket != null) {
                 webSocket.Close();
+                webSocket.OnMessage -= webSocket_OnMessage; // Shouldn't be needed.
+            }
             webSocket = new WebSocket(Url);
             webSocket.OnMessage += webSocket_OnMessage;
             webSocket.Connect();
@@ -156,6 +158,7 @@ namespace SlackRTM
             var message = new Message(chan.Id, text, sendId++);
             SentMessages.Add(message);
             webSocket.Send(message.ToJson());
+            
         }
 
         private void Slack_OnAck(object sender, SlackEventArgs e)
@@ -193,6 +196,12 @@ namespace SlackRTM
             }
             uri.Query = query;
             return JObject.Parse(wc.DownloadString(uri.Uri));
+        }
+
+        private void CleanOldMessages()
+        {
+            while (SentMessages.Count > 1000)
+                SentMessages.RemoveAt(0);
         }
     }
 }
