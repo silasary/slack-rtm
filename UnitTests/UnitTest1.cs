@@ -12,7 +12,7 @@ namespace UnitTests
         public UnitTests()
         {
             Token = Environment.GetEnvironmentVariable("SLACK_TOKEN");
-            if (String.IsNullOrWhiteSpace(Token))
+            if (String.IsNullOrWhiteSpace(Token) && File.Exists("token.txt"))
                 Token = File.ReadAllText("token.txt");
         }
 
@@ -33,6 +33,11 @@ namespace UnitTests
         [Test]
         public void TestConnect()
         {
+            if (String.IsNullOrWhiteSpace(Token))
+            {
+                Assert.Inconclusive("No valid token specified");
+                return;
+            }
             var slack = new Slack(Token);
             Assert.IsTrue(slack.Init(),"Invalid Token");
             Assert.IsTrue(slack.Connect(), "Failed to Connect");
