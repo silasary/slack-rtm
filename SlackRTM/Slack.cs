@@ -5,7 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using WebSocketSharp;
+using System.Net.WebSockets;
+using Websockets;
 
 namespace SlackRTM
 {
@@ -24,7 +25,7 @@ namespace SlackRTM
             }
         }
 
-        public bool Connected { get { return webSocket.IsAlive; } }
+        public bool Connected { get { return webSocket.IsOpen; } }
 
         public bool Connecting { get { return !RecievedHello && webSocket != null; } }
 
@@ -45,11 +46,12 @@ namespace SlackRTM
         private string Url;
         private WebClient wc = new WebClient();
 
-        private WebSocket webSocket;
+        private IWebSocketConnection webSocket;
         public Slack()
         {
             OnAck += Slack_OnAck;
             JsonConverter = new SlackJsonConverter(this);
+            Websockets.Net.WebsocketConnection.Link();
         }
 
         public Slack(string token)
@@ -80,9 +82,9 @@ namespace SlackRTM
                 webSocket.Close();
                 webSocket.OnMessage -= webSocket_OnMessage; // Shouldn't be needed.
             }
-            webSocket = new WebSocket(Url);
+            webSocket = WebSocketFactory.Create();
             webSocket.OnMessage += webSocket_OnMessage;
-            webSocket.Connect();
+            webSocket.Open(Url);
             Url = null;
             return true;
         }
@@ -165,17 +167,15 @@ namespace SlackRTM
         {
             var ack = (e.Data as Ack);
         }
-        private void webSocket_OnMessage(object sender, MessageEventArgs e)
+        private void webSocket_OnMessage(string text)
         {
-            if (sender != webSocket)
-                return;
-            var data = Event.NewEvent(e.Data);
+            var data = Event.NewEvent(text);
             if (data.Type == "hello")
-                this.RecievedHello = true;
+                RecievedHello = true;
             if (data is Ack)
-                this.OnAck(this, new SlackEventArgs(data));
-            else if (this.OnEvent != null)
-                this.OnEvent(this, new SlackEventArgs(data));
+                OnAck?.Invoke(this, new SlackEventArgs(data));
+            else
+                OnEvent?.Invoke(this, new SlackEventArgs(data));
         }
 
         /// <summary>

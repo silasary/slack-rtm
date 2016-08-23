@@ -76,6 +76,7 @@ namespace SlackConsole
 
         private static string SubstituteMarkup(string p, Slack instance)
         {
+            //return p;
             return Regex.Replace(p, @"<([@#])(.*?)>", (match) =>
             {
                 switch (match.Groups[1].Value)
