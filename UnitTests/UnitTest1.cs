@@ -26,6 +26,11 @@ namespace UnitTests
         [Test]
         public void TestStartValid()
         {
+            if (String.IsNullOrWhiteSpace(Token))
+            {
+                Assert.Inconclusive("No valid token specified");
+                return;
+            }
             var slack = new Slack(Token);
             Assert.IsTrue(slack.Init());
         }
